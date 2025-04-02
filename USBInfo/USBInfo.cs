@@ -6,8 +6,7 @@ namespace USBInfo;
 
 public class USBInfo
 {
-
-    static void printPropertiesVolumes()
+    public static void printPropertiesVolumes()
     {
         string query = "SELECT * FROM Win32_Volume WHERE DriveType = 2";
         ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
@@ -22,7 +21,7 @@ public class USBInfo
         }
     }
 
-    static void printPropertiesDevices()
+    public static void printPropertiesDevices()
     {
         // Create a ManagementObjectSearcher to query USB devices
         ManagementObjectSearcher searcher = new ManagementObjectSearcher(@"SELECT * FROM Win32_USBControllerDevice");
