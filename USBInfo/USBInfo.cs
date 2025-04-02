@@ -73,25 +73,43 @@ public class USBInfo
             foreach (ManagementObject usbDevice in searcher.Get())
             {
                 // Get the associated PnPDeviceID
-                string deviceId = usbDevice["Dependent"].ToString() ?? "";
-                if (deviceId.Length == 0)
+                Object deviceIDObject = usbDevice["Dependent"];
+                if (deviceIDObject is null)
                 {
-                    break;
+                    continue;
                 }
+
+                string? deviceId = deviceIDObject.ToString();
+                if (deviceId is null)
+                {
+                    continue;
+                }
+
                 deviceId = deviceId.Split('=')[1].Trim('"');
 
                 // Query the PnPDevice for the serial number
                 ManagementObjectSearcher deviceSearcher = new ManagementObjectSearcher($"SELECT * FROM Win32_PnPEntity WHERE DeviceID='{deviceId}'");
                 foreach (ManagementObject device in deviceSearcher.Get())
                 {
-                    if (device["Service"].ToString() == "USBSTOR")
+                    Object deviceService = device["Service"];
+                    if (deviceService == null)
+                    {
+                        continue;
+                    }
+
+                    if (deviceService.ToString() == "USBSTOR")
                     {
                         try
                         {
-                            string deviceSerial = device["PNPDeviceID"].ToString() ?? "";
-                            if (deviceSerial.Length == 0)
+                            Object PNPDeviceIDObject = device["PNPDeviceID"];
+                            if (PNPDeviceIDObject == null)
                             {
-                                break;
+                                continue;
+                            }
+                            string? deviceSerial = PNPDeviceIDObject.ToString();
+                            if (deviceSerial is null)
+                            {
+                                continue;
                             }
                             string[] components = deviceSerial.Split('\\');
                             if (components.Length > 1)
