@@ -7,42 +7,61 @@ namespace USBInfo;
 public class USBInfo
 {
 
-    public static void printProperties()
+    static void printPropertiesVolumes()
     {
-        try
+        string query = "SELECT * FROM Win32_Volume WHERE DriveType = 2";
+        ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
+
+        foreach (ManagementObject drive in searcher.Get())
         {
-            // Create a ManagementObjectSearcher to query USB devices
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(@"SELECT * FROM Win32_USBControllerDevice");
-
-            foreach (ManagementObject usbDevice in searcher.Get())
+            foreach (PropertyData prop in drive.Properties)
             {
-                // Get the associated PnPDeviceID
-                string deviceId = usbDevice["Dependent"].ToString() ?? "";
-                if (deviceId.Length == 0)
-                {
-                    break;
-                }
-                deviceId = deviceId.Split('=')[1].Trim('"');
+                Console.WriteLine("{0}: {1}", prop.Name, prop.Value);
+            }
+            Console.WriteLine("***************************");
+        }
+    }
 
-                // Query the PnPDevice for the serial number
-                ManagementObjectSearcher deviceSearcher = new ManagementObjectSearcher($"SELECT * FROM Win32_PnPEntity WHERE DeviceID='{deviceId}'");
-                foreach (ManagementObject device in deviceSearcher.Get())
+    static void printPropertiesDevices()
+    {
+        // Create a ManagementObjectSearcher to query USB devices
+        ManagementObjectSearcher searcher = new ManagementObjectSearcher(@"SELECT * FROM Win32_USBControllerDevice");
+
+        foreach (ManagementObject usbDevice in searcher.Get())
+        {
+            // Get the associated PnPDeviceID
+            Object? deviceIDObject = usbDevice["Dependent"]; 
+            if (deviceIDObject == null)
+            {
+                continue;
+            }
+
+            string? deviceId = deviceIDObject.ToString();
+            if (deviceId == null || deviceId.Length == 0)
+            {
+                break;
+            }
+            deviceId = deviceId.Split('=')[1].Trim('"');
+
+            // Query the PnPDevice for the serial number
+            ManagementObjectSearcher deviceSearcher = new ManagementObjectSearcher($"SELECT * FROM Win32_PnPEntity WHERE DeviceID='{deviceId}'");
+            foreach (ManagementObject device in deviceSearcher.Get())
+            {
+                Object deviceService = device["Service"];
+                if (deviceService == null)
                 {
-                    if (device["Service"].ToString() == "USBSTOR")
+                    continue;
+                }
+                if (deviceService.ToString() == "USBSTOR")
+                {
+                    foreach (PropertyData prop in device.Properties)
                     {
-                        foreach (PropertyData prop in device.Properties)
-                        {
-                            Console.WriteLine("{0}: {1}", prop.Name, prop.Value);
-                        }
-                        Console.WriteLine("***************************");
+                        Console.WriteLine("{0}: {1}", prop.Name, prop.Value);
                     }
+                    Console.WriteLine("***************************");
                 }
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred: {ex.Message}");
-        }        
     }
 
     public static string getSerialNumber()
