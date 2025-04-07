@@ -9,5 +9,6 @@ class Program
     {
         string usbSerial = USBInfo.USBInfo.getSerialNumber();
         Console.WriteLine(usbSerial);
+        Console.ReadLine();
     }
 }

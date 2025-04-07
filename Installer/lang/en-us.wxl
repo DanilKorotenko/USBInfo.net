@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="en-us" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+
+  <String Id="ApplicationName">USBInfo</String>
+  <String Id="ApplicationDescription">USBInfo</String>
+  <String Id="Manufacturer">DPSU</String>
+  <String Id="DowngradeErrorMessage">A newer version of [ProductName] is already installed.</String>
+
+</WixLocalization>

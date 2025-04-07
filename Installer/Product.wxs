@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <Wix  xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+    <Package ProductCode="cccaffd8-104f-4dc2-9b4c-ec864e5620ea"
+        Language="1033"
+        Manufacturer="!(loc.Manufacturer)"
+        Name="USBInfo"
+        Version="1.0.$(var.BuildNumber)"
+        UpgradeCode="890ee7f0-81c2-43b1-80c1-2f04a13f6090"
+        Codepage="utf-8"
+        Compressed="yes">
+
+        <!-- <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeErrorMessage)"
+            AllowDowngrades="no"
+            AllowSameVersionUpgrades="yes" /> -->
+
+        <StandardDirectory Id="ProgramFiles6432Folder">
+            <Directory Id="INTERNAL" Name="USBInfo" />
+        </StandardDirectory>
+
+        <StandardDirectory Id="ProgramMenuFolder">
+            <Directory Id="ProgramMenuShortcutsFolder" Name="USBInfo" />
+        </StandardDirectory>
+
+
+        <MediaTemplate EmbedCab="yes" />
+
+        <Icon Id="icon.ico" SourceFile="assets\dpsuIcon2.ico"/>
+        <Property Id="ARPPRODUCTICON" Value="icon.ico" />
+
+        <Files Directory="INTERNAL" Include="..\publish\** " />
+
+        <ComponentGroup Id="MainComponenets">
+            <Component Id="Shortcuts" Guid="c544e785-05c3-4916-9223-a2a02a43f29d">
+                <Shortcut
+                    Id="getUSBInfoDevicesShortcut"
+                    Name="getUSBInfoDevices"
+                    Directory="ProgramMenuShortcutsFolder"
+                    Icon="icon.ico"
+                    WorkingDirectory="INTERNAL"
+                    Target="[INTERNAL]getUSBInfoDevices.exe"/>
+                <Shortcut
+                    Id="getUSBInfoVolumesShortcut"
+                    Name="getUSBInfoVolumes"
+                    Directory="ProgramMenuShortcutsFolder"
+                    Icon="icon.ico"
+                    WorkingDirectory="INTERNAL"
+                    Target="[INTERNAL]getUSBInfoVolumes.exe"/>
+                <Shortcut
+                    Id="getUSBInfoSerialShortcut"
+                    Name="getUSBSerial"
+                    Directory="ProgramMenuShortcutsFolder"
+                    Icon="icon.ico"
+                    WorkingDirectory="INTERNAL"
+                    Target="[INTERNAL]getUSBSerial.exe"/>
+            </Component>
+        </ComponentGroup>
+    </Package>
+</Wix>

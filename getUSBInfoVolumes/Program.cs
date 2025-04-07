@@ -8,5 +8,6 @@ class Program
     {
         Console.WriteLine("Volumes:");
         USBInfo.USBInfo.printPropertiesVolumes();
+        Console.ReadLine();
     }
 }

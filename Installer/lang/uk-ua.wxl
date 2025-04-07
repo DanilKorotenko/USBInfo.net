@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="uk-ua" xmlns="http://wixtoolset.org/schemas/v4/wxl">
+
+  <String Id="ApplicationName" Value="USBInfo" />
+  <String Id="ApplicationDescription" Value="USBInfo" />
+  <String Id="Manufacturer" Value="ДПСУ" />
+  <String Id="DowngradeErrorMessage" Value="Новіша версія цієї програми вже встановлена." />
+
+</WixLocalization>

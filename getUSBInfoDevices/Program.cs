@@ -8,5 +8,6 @@ class Program
     {
         Console.WriteLine("Devices:");
         USBInfo.USBInfo.printPropertiesDevices();
+        Console.ReadLine();
     }
 }
