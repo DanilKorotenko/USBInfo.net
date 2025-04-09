@@ -6,13 +6,8 @@
         Manufacturer="!(loc.Manufacturer)"
         Name="USBInfo"
         Version="1.0.$(var.BuildNumber)"
-        UpgradeCode="890ee7f0-81c2-43b1-80c1-2f04a13f6090"
         Codepage="utf-8"
         Compressed="yes">
-
-        <!-- <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeErrorMessage)"
-            AllowDowngrades="no"
-            AllowSameVersionUpgrades="yes" /> -->
 
         <StandardDirectory Id="ProgramFiles6432Folder">
             <Directory Id="INTERNAL" Name="USBInfo" />

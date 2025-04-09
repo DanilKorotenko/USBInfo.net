@@ -9,3 +9,5 @@ getUSBInfoDevices/bin/
 getUSBInfoDevices/obj/
 getUSBInfoVolumes/bin/
 getUSBInfoVolumes/obj/
+USBInfoUtil/bin/
+USBInfoUtil/obj/
