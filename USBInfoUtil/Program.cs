@@ -65,8 +65,8 @@ class Program
 
     public static void printUSBHub()
     {
-        Console.WriteLine("USBHub:");
-        USBHub[] devices = USBHub.getAllVolumes;
+        Console.WriteLine("USBHub drives:");
+        USBHub[] devices = USBHub.devicesWithDriveLetters;
         foreach (USBHub usbDevice in devices)
         {
             usbDevice.PrintAllProperties();
@@ -75,16 +75,6 @@ class Program
             {
                 Console.WriteLine(driveLetter);
             }
-
-            // Console.WriteLine($"Caption: {usbDevice.Caption}");
-            // Console.WriteLine($"Description: {usbDevice.Description}");
-            // Console.WriteLine($"Number of hardware IDs: {usbDevice.HardwareID.Length}");
-
-            // foreach (string hardwareID in usbDevice.HardwareID)
-            // {
-            //     Console.WriteLine(hardwareID);
-            // }
-
             Console.WriteLine("******************************************************");
         }
     }

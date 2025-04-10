@@ -1,3 +1,4 @@
+using System.CodeDom;
 using System.Management;
 
 namespace USBInfo;
@@ -6,7 +7,7 @@ namespace USBInfo;
 
 public class USBHub : USBObject
 {
-    static public USBHub[] getAllVolumes
+    static public USBHub[] AllDevices
     {
         get 
         {
@@ -21,6 +22,25 @@ public class USBHub : USBObject
         }
     }
 
+    static public USBHub[] devicesWithDriveLetters
+    {
+        get 
+        {
+            List<USBHub> result = new List<USBHub>();
+            USBHub[] all = USBHub.AllDevices;
+            foreach (USBHub device in all)
+            {
+                string[] diskLetters = device.GetDiskNames();
+                if(diskLetters.Length > 0)
+                {
+                    result.Add(device);
+                }
+            }
+            return result.ToArray();
+        }
+    }
+    
+
     public USBHub(ManagementObject aDrive) : base(aDrive)
     {
     }
@@ -33,8 +53,32 @@ public class USBHub : USBObject
         }
     }
 
-    public IEnumerable<string> GetDiskNames()
+    public string SerialNumber
     {
+        get
+        {
+            string result = "No serial number found";
+
+            Object PNPDeviceIDObject = this.ManagedObject["PNPDeviceID"];
+            if (PNPDeviceIDObject is not null)
+            {
+                string? deviceSerial = PNPDeviceIDObject.ToString();
+                if (deviceSerial is not null)
+                {
+                    string[] components = deviceSerial.Split('\\');
+                    if (components.Length > 1)
+                    {
+                        result = components[components.Length-1];
+                    }
+                }
+            }
+            return result;
+        }
+    }
+
+    public string[] GetDiskNames()
+    {
+        List<string> result = new List<string>();
         using (Device device = Device.Get(PnpDeviceID))
         {
             // get children devices
@@ -49,12 +93,13 @@ public class USBHub : USBObject
                         // associate partitions with logical disks (drive letter volumes)
                         foreach (ManagementObject disk in new ManagementObjectSearcher("ASSOCIATORS OF {Win32_DiskPartition.DeviceID='" + partition["DeviceID"] + "'} WHERE AssocClass=Win32_LogicalDiskToPartition").Get())
                         {
-                            yield return (string)disk["DeviceID"];
+                            result.Add((string)disk["DeviceID"]);
                         }
                     }
                 }
             }
         }
+        return result.ToArray();
     }
 
 }

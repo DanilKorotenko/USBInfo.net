@@ -17,7 +17,9 @@ public sealed class Device : IDisposable
     public static Device Get(string pnpDeviceId)
     {
         if (pnpDeviceId == null)
+        {
             throw new ArgumentNullException("pnpDeviceId");
+        }
 
         IntPtr hDevInfo = SetupDiGetClassDevs(IntPtr.Zero, pnpDeviceId, IntPtr.Zero, DIGCF.DIGCF_ALLCLASSES | DIGCF.DIGCF_DEVICEINTERFACE);
         if (hDevInfo == (IntPtr)INVALID_HANDLE_VALUE)
@@ -29,7 +31,9 @@ public sealed class Device : IDisposable
         {
             int err = Marshal.GetLastWin32Error();
             if (err == ERROR_NO_MORE_ITEMS)
+            {
                 return null;
+            }
 
             throw new Win32Exception(err);
         }
