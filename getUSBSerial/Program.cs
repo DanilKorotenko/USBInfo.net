@@ -4,11 +4,9 @@
 
 class Program
 {
-
     static void Main()
     {
-        string usbSerial = USBInfo.USBInfo.getSerialNumber();
-        Console.WriteLine(usbSerial);
+        Console.WriteLine($"Device Serial: {USBHelper.getSerialNumber()}");
         Console.ReadLine();
     }
 }

@@ -7,7 +7,7 @@ class Program
     static void Main()
     {
         Console.WriteLine("Volumes:");
-        USBInfo.USBInfo.printPropertiesVolumes();
+        //USBInfo.USBInfo.printPropertiesVolumes();
         Console.ReadLine();
     }
 }

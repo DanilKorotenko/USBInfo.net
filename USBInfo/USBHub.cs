@@ -39,17 +39,38 @@ public class USBHub : USBObject
             return result.ToArray();
         }
     }
-    
+
+    static public USBHub? DeviceWithDriveLetter(string aDriveLetter)
+    {
+        USBHub? result = null;
+        USBHub[] all = USBHub.devicesWithDriveLetters;
+        foreach (USBHub device in all)
+        {
+            string[] diskLetters = device.GetDiskNames();
+            if (diskLetters.Contains(aDriveLetter))
+            {
+                result = device;
+                break;
+            }
+        }
+        return result;
+    }
 
     public USBHub(ManagementObject aDrive) : base(aDrive)
     {
     }
 
-    public string PnpDeviceID
+    private string? PnpDeviceID
     {
         get
         {
-            return (string)this.ManagedObject.GetPropertyValue("PNPDeviceID");
+            string? deviceSerial = null;
+            Object PNPDeviceIDObject = this.ManagedObject.GetPropertyValue("PNPDeviceID");
+            if (PNPDeviceIDObject is not null)
+            {
+                deviceSerial = PNPDeviceIDObject.ToString();
+            }
+            return deviceSerial;
         }
     }
 
@@ -59,27 +80,30 @@ public class USBHub : USBObject
         {
             string result = "No serial number found";
 
-            Object PNPDeviceIDObject = this.ManagedObject["PNPDeviceID"];
-            if (PNPDeviceIDObject is not null)
+            string? deviceSerial = this.PnpDeviceID;
+            if (deviceSerial is not null)
             {
-                string? deviceSerial = PNPDeviceIDObject.ToString();
-                if (deviceSerial is not null)
+                string[] components = deviceSerial.Split('\\');
+                if (components.Length > 1)
                 {
-                    string[] components = deviceSerial.Split('\\');
-                    if (components.Length > 1)
-                    {
-                        result = components[components.Length-1];
-                    }
+                    result = components[components.Length-1];
                 }
             }
+
             return result;
         }
     }
 
     public string[] GetDiskNames()
     {
+        if (this.PnpDeviceID == null)
+        {
+            return [];
+        }
+
         List<string> result = new List<string>();
-        using (Device device = Device.Get(PnpDeviceID))
+        Device? device = Device.Get(PnpDeviceID);
+        if (device is not null)
         {
             // get children devices
             foreach (string childDeviceId in device.ChildrenPnpDeviceIds)

@@ -5,16 +5,17 @@ namespace USBInfo;
 
 public sealed class Device : IDisposable
 {
-    private IntPtr _hDevInfo;
+    private IntPtr          _hDevInfo;
     private SP_DEVINFO_DATA _data;
 
     private Device(IntPtr hDevInfo, SP_DEVINFO_DATA data)
     {
         _hDevInfo = hDevInfo;
         _data = data;
+        PnpDeviceId = string.Empty;
     }
 
-    public static Device Get(string pnpDeviceId)
+    public static Device? Get(string pnpDeviceId)
     {
         if (pnpDeviceId == null)
         {
@@ -52,7 +53,7 @@ public sealed class Device : IDisposable
 
     public string PnpDeviceId { get; private set; }
 
-    public string ParentPnpDeviceId
+    public string? ParentPnpDeviceId
     {
         get
         {
@@ -68,7 +69,7 @@ public sealed class Device : IDisposable
         }
     }
 
-    private static string GetDeviceId(uint inst)
+    private static string? GetDeviceId(uint inst)
     {
         IntPtr buffer = Marshal.AllocHGlobal(MAX_DEVICE_ID_LEN + 1);
         int cr = CM_Get_Device_ID(inst, buffer, MAX_DEVICE_ID_LEN + 1, 0);
@@ -90,22 +91,37 @@ public sealed class Device : IDisposable
         get
         {
             if (IsVistaOrHiger)
+            {
                 return GetStringListProperty(DEVPROPKEY.DEVPKEY_Device_Children);
+            }
 
             uint child;
             int cr = CM_Get_Child(out child, _data.DevInst, 0);
             if (cr != 0)
-                return new string[0];
+            {
+                return new string[0]; 
+            }
 
             List<string> ids = new List<string>();
-            ids.Add(GetDeviceId(child));
+            string? deviceID = GetDeviceId(child);
+            if (deviceID != null)
+            {
+                ids.Add(deviceID);
+            }
+
             do
             {
                 cr = CM_Get_Sibling(out child, child, 0);
                 if (cr != 0)
+                {
                     return ids.ToArray();
-
-                ids.Add(GetDeviceId(child));
+                }
+                
+                deviceID = GetDeviceId(child);
+                if (deviceID != null)
+                {
+                    ids.Add(deviceID);
+                }
             }
             while (true);
         }
@@ -184,21 +200,27 @@ public sealed class Device : IDisposable
         int size;
         SetupDiGetDeviceProperty(_hDevInfo, ref _data, ref key, out type, IntPtr.Zero, 0, out size, 0);
         if (size == 0)
+        {
             return new string[0];
+        }
 
         IntPtr buffer = Marshal.AllocHGlobal(size);
         try
         {
             if (!SetupDiGetDeviceProperty(_hDevInfo, ref _data, ref key, out type, buffer, size, out size, 0))
+            {
                 throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
 
             List<string> strings = new List<string>();
             IntPtr current = buffer;
             do
             {
-                string s = Marshal.PtrToStringUni(current);
+                string? s = Marshal.PtrToStringUni(current);
                 if (string.IsNullOrEmpty(s))
-                    break;
+                { 
+                    break; 
+                }
 
                 strings.Add(s);
                 current += (1 + s.Length) * 2;
@@ -212,13 +234,15 @@ public sealed class Device : IDisposable
         }
     }
 
-    private string GetStringProperty(DEVPROPKEY key)
+    private string? GetStringProperty(DEVPROPKEY key)
     {
         int type;
         int size;
         SetupDiGetDeviceProperty(_hDevInfo, ref _data, ref key, out type, IntPtr.Zero, 0, out size, 0);
         if (size == 0)
+        {
             return null;
+        }
 
         IntPtr buffer = Marshal.AllocHGlobal(size);
         try

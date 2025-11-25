@@ -11,3 +11,4 @@ getUSBInfoVolumes/bin/
 getUSBInfoVolumes/obj/
 USBInfoUtil/bin/
 USBInfoUtil/obj/
+.vs/

@@ -7,7 +7,7 @@ class Program
     static void Main()
     {
         Console.WriteLine("Devices:");
-        USBInfo.USBInfo.printPropertiesDevices();
+        //USBInfo.USBInfo.printPropertiesDevices();
         Console.ReadLine();
     }
 }
