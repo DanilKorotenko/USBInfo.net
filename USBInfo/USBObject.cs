@@ -15,12 +15,12 @@ public class USBObject
 
     public void PrintAllProperties()
     {
-        foreach (PropertyData prop in _managedObject.Properties)
+        foreach (PropertyData prop in ManagedObject.Properties)
         {
-            var val = prop.Value;
+            object? val = prop.Value;
             if (val is not null)
             {
-                string? valStr = prop.Value.ToString();
+                string? valStr = val.ToString();
                 if (valStr is not null)
                 {
                     Console.WriteLine("{0}: {1}", prop.Name, valStr);
@@ -37,6 +37,25 @@ public class USBObject
         }
     }
 
+    public string? GetStringProperty(string aPropertyName)
+    {
+        object? propertyVal = ManagedObject[aPropertyName];
+        if (propertyVal != null)
+        {
+            return propertyVal.ToString();
+        }
+        return null;
+    }
+
+    public string? DeviceID
+    {
+        get
+        {
+            return GetStringProperty("DeviceID");
+        }
+    }
+
     protected ManagementObject ManagedObject { get { return _managedObject; } }
+
 
 }
