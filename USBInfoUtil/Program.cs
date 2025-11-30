@@ -6,21 +6,13 @@ class Program
 {
     public static void printPropertiesUSBDrives()
     {
-        Console.WriteLine("USBDrives:");
-        USBDiskDrive[] drives = USBDiskDrive.getAllDrives;
-        foreach (USBDiskDrive drive in drives)
+        Console.WriteLine("Win32_DiskDrives:");
+        //string query = "SELECT * FROM Win32_DiskDrive WHERE InterfaceType='USB'";
+        string query = "SELECT * FROM Win32_DiskDrive";
+
+        foreach (WMObject drive in WMObject.searchObjectsWithQuery(query))
         {
             Console.WriteLine(drive.ToString());
-            Console.WriteLine("***************************");
-            USBPnPEntity? entity = drive.pnpEntity;
-            if (entity is not null)
-            {
-                //Console.WriteLine(drive.ToString());
-                Console.WriteLine("--PnPEntity--:");
-                Console.WriteLine(entity.ToString());
-                // Console.WriteLine($"--SerialNumber--: {entity.SerialNumber}");
-                // Console.WriteLine("******************************************************");
-            }
         }
     }
 

@@ -93,26 +93,24 @@ public class USBHub : WMObject
                             string childPnpDeviceId = childDeviceId.Replace(@"\", @"\\");
                             string driveQuerry = $"SELECT DeviceID FROM Win32_DiskDrive WHERE PNPDeviceID='{childPnpDeviceId}'";
                             
-                            ManagementObjectSearcher driveSearcher = new ManagementObjectSearcher(driveQuerry);
                             // get the drive object that correspond to this id (escape the id)
-                            foreach (ManagementObject drive in driveSearcher.Get())
+                            foreach (WMObject drive in WMObject.searchObjectsWithQuery(driveQuerry))
                             {
-                                USBDiskDrive usbDrive = new USBDiskDrive(drive);
-                                string? driveDeviceID = usbDrive.DeviceID;
+                                string? driveDeviceID = drive.DeviceID;
                                 if (driveDeviceID != null)
                                 {
+                                    string partitionQuery = "ASSOCIATORS OF {Win32_DiskDrive.DeviceID='" + driveDeviceID + "'} WHERE AssocClass=Win32_DiskDriveToDiskPartition";
                                     // associate physical disks with partitions
-                                    foreach (ManagementObject partition in new ManagementObjectSearcher("ASSOCIATORS OF {Win32_DiskDrive.DeviceID='" + driveDeviceID + "'} WHERE AssocClass=Win32_DiskDriveToDiskPartition").Get())
+                                    foreach (WMObject partition in WMObject.searchObjectsWithQuery(partitionQuery))
                                     {
-                                        WMObject usbPartition = new WMObject(partition);
-                                        string? partitionDeviceID = usbPartition.DeviceID;
+                                        string? partitionDeviceID = partition.DeviceID;
                                         if (partitionDeviceID != null)
                                         {
+                                            string logicalDisksQuery = "ASSOCIATORS OF {Win32_DiskPartition.DeviceID='" + partitionDeviceID + "'} WHERE AssocClass=Win32_LogicalDiskToPartition";
                                             // associate partitions with logical disks (drive letter volumes)
-                                            foreach (ManagementObject disk in new ManagementObjectSearcher("ASSOCIATORS OF {Win32_DiskPartition.DeviceID='" + partitionDeviceID + "'} WHERE AssocClass=Win32_LogicalDiskToPartition").Get())
+                                            foreach (WMObject disk in WMObject.searchObjectsWithQuery(logicalDisksQuery))
                                             {
-                                                WMObject usbDisk = new WMObject(disk);
-                                                string? diskDeviceID = usbDisk.DeviceID;
+                                                string? diskDeviceID = disk.DeviceID;
                                                 if (diskDeviceID != null)
                                                 {
                                                     diskNames.Add(diskDeviceID);

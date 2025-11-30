@@ -13,6 +13,17 @@ public class WMObject : IDisposable
 {
     private readonly ManagementObject _managementObject;
 
+    static public IEnumerable<WMObject> searchObjectsWithQuery(string aQuery)
+    {
+        using (var searcher = new ManagementObjectSearcher(aQuery))
+        {
+            foreach (ManagementObject drive in searcher.Get())
+            {
+                yield return new WMObject(drive);
+            }
+        }
+    }
+
     public WMObject(ManagementObject aManagementObject)
     {
         this._managementObject = aManagementObject;
@@ -52,17 +63,6 @@ public class WMObject : IDisposable
             }
         }
         return result;
-    }
-
-    public IEnumerable<WMObject> searchObjectsWithQuery(string aQuery)
-    {
-        using (var searcher = new ManagementObjectSearcher(aQuery))
-        {
-            foreach (ManagementObject drive in searcher.Get())
-            {
-                yield return new WMObject(drive);
-            }
-        }
     }
 
     public void Dispose()
