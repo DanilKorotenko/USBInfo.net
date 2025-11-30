@@ -19,13 +19,15 @@ public class WMDrive : WMObject
             {
                 foreach (ManagementObject mo in searcher.Get())
                 {
-                    using (WMDrive drive = new WMDrive(mo))
+                    WMDrive drive = new WMDrive(mo);
+                    string[] diskLetters = drive.Letters;
+                    if (diskLetters.Length > 0)
                     {
-                        string[] diskLetters = drive.Letters;
-                        if (diskLetters.Length > 0)
-                        {
-                            yield return drive;
-                        }
+                        yield return drive;
+                    }
+                    else
+                    {
+                        drive.Dispose();
                     }
                 }
             }
@@ -57,25 +59,36 @@ public class WMDrive : WMObject
                 string? driveDeviceID = this.DeviceID;
                 if (driveDeviceID != null)
                 {
-                    string partitionQuery = "ASSOCIATORS OF {Win32_DiskDrive.DeviceID='" + driveDeviceID + "'} WHERE AssocClass=Win32_DiskDriveToDiskPartition";
-                    // associate physical disks with partitions
-                    foreach (WMObject partition in WMObject.searchObjectsWithQuery(partitionQuery))
+                    //string escape(string value) => value.Replace("\\", "\\\\").Replace("'", "\\'");
+                    try
                     {
-                        string? partitionDeviceID = partition.DeviceID;
-                        if (partitionDeviceID != null)
+                        string partitionQuery = "ASSOCIATORS OF {Win32_DiskDrive.DeviceID='" + driveDeviceID + "'} WHERE AssocClass=Win32_DiskDriveToDiskPartition";
+                        // associate physical disks with partitions
+                        foreach (WMObject partition in WMObject.searchObjectsWithQuery(partitionQuery))
                         {
-                            string logicalDisksQuery = "ASSOCIATORS OF {Win32_DiskPartition.DeviceID='" + partitionDeviceID + "'} WHERE AssocClass=Win32_LogicalDiskToPartition";
-                            // associate partitions with logical disks (drive letter volumes)
-                            foreach (WMObject disk in WMObject.searchObjectsWithQuery(logicalDisksQuery))
+                            using (partition)
                             {
-                                string? diskDeviceID = disk.DeviceID;
-                                if (diskDeviceID != null)
+                                string? partitionDeviceID = partition.DeviceID;
+                                if (partitionDeviceID != null)
                                 {
-                                    letters.Add(diskDeviceID);
+                                    string logicalDisksQuery = "ASSOCIATORS OF {Win32_DiskPartition.DeviceID='" + partitionDeviceID + "'} WHERE AssocClass=Win32_LogicalDiskToPartition";
+                                    // associate partitions with logical disks (drive letter volumes)
+                                    foreach (WMObject disk in WMObject.searchObjectsWithQuery(logicalDisksQuery))
+                                    {
+                                        using (disk)
+                                        {
+                                            string? diskDeviceID = disk.DeviceID;
+                                            if (diskDeviceID != null)
+                                            {
+                                                letters.Add(diskDeviceID);
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
+                    catch { }
                 }
             }
             return letters.ToArray();

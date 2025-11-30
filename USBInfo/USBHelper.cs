@@ -24,15 +24,17 @@ public class USBHelper
 
     public static string getSerialNumber() 
     {
-        WMDrive? usbHub = findUSBHub();
-        if (usbHub is not null) 
+        using (WMDrive? usbHub = findUSBHub())
         {
-            string? result = usbHub.SerialNumber;
-            if (string.IsNullOrEmpty(result))
+            if (usbHub is not null)
             {
-                result = "No serial number found";
+                string? result = usbHub.SerialNumber;
+                if (string.IsNullOrEmpty(result))
+                {
+                    result = "No serial number found";
+                }
+                return result;
             }
-            return result;
         }
         Console.WriteLine("No devices found");
         return string.Empty;
