@@ -4,7 +4,7 @@ namespace USBInfo;
 
 [System.Runtime.Versioning.SupportedOSPlatform("windows")]
 
-public class USBVolume : USBObject
+public class USBVolume : WMObject
 {
     static public USBVolume[] getAllVolumes
     {
@@ -32,7 +32,7 @@ public class USBVolume : USBObject
             USBPnPEntity? result = null;
 
             // Get the associated PnPDeviceID
-            Object? deviceIDObject = this.ManagedObject["DeviceID"]; 
+            Object? deviceIDObject = this.ManagementObject["DeviceID"]; 
             if (deviceIDObject is not null)
             {
                 string? deviceId = deviceIDObject.ToString();

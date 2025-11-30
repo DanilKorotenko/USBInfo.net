@@ -9,7 +9,7 @@ namespace USBInfo;
 
 [System.Runtime.Versioning.SupportedOSPlatform("windows")]
 
-public class USBDiskDrive : USBObject
+public class USBDiskDrive : WMObject
 {
     static public USBDiskDrive[] getAllDrives
     {
@@ -38,7 +38,7 @@ public class USBDiskDrive : USBObject
             USBPnPEntity? result = null;
 
             // Get the associated PnPDeviceID
-            Object? deviceIDObject = this.ManagedObject["DeviceID"];
+            Object? deviceIDObject = this.ManagementObject["DeviceID"];
             if (deviceIDObject is not null)
             {
                 string? deviceId = deviceIDObject.ToString();

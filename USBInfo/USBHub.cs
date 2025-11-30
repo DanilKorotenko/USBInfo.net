@@ -5,7 +5,7 @@ namespace USBInfo;
 
 [System.Runtime.Versioning.SupportedOSPlatform("windows")]
 
-public class USBHub : USBObject
+public class USBHub : WMObject
 {
     static public USBHub[] AllDevices
     {
@@ -64,13 +64,7 @@ public class USBHub : USBObject
     {
         get
         {
-            string? deviceSerial = null;
-            Object PNPDeviceIDObject = this.ManagedObject.GetPropertyValue("PNPDeviceID");
-            if (PNPDeviceIDObject is not null)
-            {
-                deviceSerial = PNPDeviceIDObject.ToString();
-            }
-            return deviceSerial;
+            return GetStringProperty("PNPDeviceID");
         }
     }
 
@@ -124,14 +118,14 @@ public class USBHub : USBObject
                                     // associate physical disks with partitions
                                     foreach (ManagementObject partition in new ManagementObjectSearcher("ASSOCIATORS OF {Win32_DiskDrive.DeviceID='" + driveDeviceID + "'} WHERE AssocClass=Win32_DiskDriveToDiskPartition").Get())
                                     {
-                                        USBObject usbPartition = new USBObject(partition);
+                                        WMObject usbPartition = new WMObject(partition);
                                         string? partitionDeviceID = usbPartition.DeviceID;
                                         if (partitionDeviceID != null)
                                         {
                                             // associate partitions with logical disks (drive letter volumes)
                                             foreach (ManagementObject disk in new ManagementObjectSearcher("ASSOCIATORS OF {Win32_DiskPartition.DeviceID='" + partitionDeviceID + "'} WHERE AssocClass=Win32_LogicalDiskToPartition").Get())
                                             {
-                                                USBObject usbDisk = new USBObject(disk);
+                                                WMObject usbDisk = new WMObject(disk);
                                                 string? diskDeviceID = usbDisk.DeviceID;
                                                 if (diskDeviceID != null)
                                                 {
