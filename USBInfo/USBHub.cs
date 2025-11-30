@@ -117,7 +117,7 @@ public class USBHub : USBObject
                             // get the drive object that correspond to this id (escape the id)
                             foreach (ManagementObject drive in driveSearcher.Get())
                             {
-                                USBObject usbDrive = new USBObject(drive);
+                                USBDiskDrive usbDrive = new USBDiskDrive(drive);
                                 string? driveDeviceID = usbDrive.DeviceID;
                                 if (driveDeviceID != null)
                                 {
