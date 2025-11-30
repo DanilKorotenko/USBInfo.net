@@ -11,10 +11,10 @@ namespace USBInfo;
 
 public class USBHelper 
 {
-    public static USBHub? findUSBHub() 
+    public static WMDrive? findUSBHub() 
     {
-        USBHub? result = null;
-        foreach (USBHub device in USBHub.DevicesWithDriveLetters())
+        WMDrive? result = null;
+        foreach (WMDrive device in WMDrive.AllDrives)
         {
             result = device;
             break;
@@ -24,10 +24,15 @@ public class USBHelper
 
     public static string getSerialNumber() 
     {
-        USBHub? usbHub = findUSBHub();
+        WMDrive? usbHub = findUSBHub();
         if (usbHub is not null) 
         {
-            return usbHub.SerialNumber;
+            string? result = usbHub.SerialNumber;
+            if (string.IsNullOrEmpty(result))
+            {
+                result = "No serial number found";
+            }
+            return result;
         }
         Console.WriteLine("No devices found");
         return string.Empty;
