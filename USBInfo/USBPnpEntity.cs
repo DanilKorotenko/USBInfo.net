@@ -10,20 +10,27 @@ public class USBPnPEntity : USBObject
     public static USBPnPEntity? GetDeviceWithID(string aDeviceID)
     {
         USBPnPEntity? result = null;
-        // Query the PnPDevice for the serial number
-        ManagementObjectSearcher deviceSearcher = new ManagementObjectSearcher($"SELECT * FROM Win32_PnPEntity WHERE DeviceID='{aDeviceID}'");
-        foreach (ManagementObject device in deviceSearcher.Get())
+        try
         {
-            Object deviceService = device["Service"];
-            if (deviceService == null)
+            // Query the PnPDevice for the serial number
+            ManagementObjectSearcher deviceSearcher = new ManagementObjectSearcher($"SELECT * FROM Win32_PnPEntity WHERE DeviceID='{aDeviceID}'");
+            foreach (ManagementObject device in deviceSearcher.Get())
             {
-                continue;
+                Object deviceService = device["Service"];
+                if (deviceService == null)
+                {
+                    continue;
+                }
+                if (deviceService.ToString() == "USBSTOR")
+                {
+                    result = new USBPnPEntity(device);
+                    break;
+                }
             }
-            if (deviceService.ToString() == "USBSTOR")
-            {
-                result = new USBPnPEntity(device);
-                break;
-            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error on getting pnpEntity: {ex.Message}");
         }
         return result;
     }
@@ -503,22 +510,6 @@ public class USBPnPEntity : USBObject
             try
             {
                 return (string)this.ManagedObject.GetPropertyValue("Description");
-            }
-            catch
-            {
-                // Handle exception caused by accessing the property value.
-                return "Unknown";
-            }
-        }
-    }
-
-    public string DeviceID
-    {
-        get
-        {
-            try
-            {
-                return (string)this.ManagedObject.GetPropertyValue("DeviceID");
             }
             catch
             {

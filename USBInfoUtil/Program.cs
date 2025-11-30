@@ -21,9 +21,29 @@ class Program
                 // Console.WriteLine($"--SerialNumber--: {entity.SerialNumber}");
                 // Console.WriteLine("******************************************************");
             }
-
         }
     }
+
+    public static void printPropertiesUSBDrives()
+    {
+        Console.WriteLine("USBDrives:");
+        USBDiskDrive[] drives = USBDiskDrive.getAllDrives;
+        foreach (USBDiskDrive drive in drives)
+        {
+            drive.PrintAllProperties();
+            Console.WriteLine("***************************");
+            USBPnPEntity? entity = drive.pnpEntity;
+            if (entity is not null)
+            {
+                drive.PrintAllProperties();
+                Console.WriteLine("--PnPEntity--:");
+                entity.PrintAllProperties();
+                // Console.WriteLine($"--SerialNumber--: {entity.SerialNumber}");
+                // Console.WriteLine("******************************************************");
+            }
+        }
+    }
+
 
     public static void printPropertiesDevices()
     {
@@ -71,7 +91,7 @@ class Program
         {
             usbDevice.PrintAllProperties();
             Console.WriteLine("Drives: ");
-            foreach (string driveLetter in usbDevice.GetDiskNames())
+            foreach (string driveLetter in usbDevice.DiskNames)
             {
                 Console.WriteLine(driveLetter);
             }
@@ -79,21 +99,44 @@ class Program
         }
     }
 
+    public static void printDrivesInfo()
+    {
+        DriveInfo[] allDrives = DriveInfo.GetDrives();
+
+        foreach (DriveInfo d in allDrives)
+        {
+            Console.WriteLine($"Drive Name: {d.Name}");
+            Console.WriteLine($"  Drive Type: {d.DriveType}");
+            if (d.IsReady == true)
+            {
+                Console.WriteLine($"  Volume Label: {d.VolumeLabel}");
+                Console.WriteLine($"  File System: {d.DriveFormat}");
+                Console.WriteLine($"  Available Space: {d.AvailableFreeSpace / (1024 * 1024 * 1024)} GB");
+                Console.WriteLine($"  Total Size: {d.TotalSize / (1024 * 1024 * 1024)} GB");
+            }
+            Console.WriteLine();
+        }
+    }
 
     static void Main(string[] args)
     {
-        // printPropertiesDevices();
+        //Console.WriteLine("****DEVICES**************************************************");
+        //printPropertiesDevices();
 
-        // Console.WriteLine("****VOLUMES**************************************************");
-        // printPropertiesVolumes();
+        //Console.WriteLine("****VOLUMES**************************************************");
+        //printPropertiesVolumes();
 
-        // Console.WriteLine("****PnpEntities**************************************************");
-        // printPnPEntities();
+        Console.WriteLine("****USBDrives**************************************************");
+        printPropertiesUSBDrives();
+
+        //Console.WriteLine("****PnpEntities**************************************************");
+        //printPnPEntities();
 
         Console.WriteLine("****USBHub**************************************************");
         printUSBHub();
 
-        Console.ReadLine();
+        //printDrivesInfo();
 
+        Console.ReadLine();
     }
 }
