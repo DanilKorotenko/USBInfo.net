@@ -9,7 +9,7 @@ namespace USBInfo;
 
 [System.Runtime.Versioning.SupportedOSPlatform("windows")]
 
-public class WMObject
+public class WMObject : IDisposable
 {
     private readonly ManagementObject _managementObject;
 
@@ -54,6 +54,21 @@ public class WMObject
         return result;
     }
 
+    public IEnumerable<WMObject> searchObjectsWithQuery(string aQuery)
+    {
+        using (var searcher = new ManagementObjectSearcher(aQuery))
+        {
+            foreach (ManagementObject drive in searcher.Get())
+            {
+                yield return new WMObject(drive);
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        ((IDisposable)_managementObject).Dispose();
+    }
 
     public string? DeviceID
     {

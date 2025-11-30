@@ -27,8 +27,8 @@ class Program
     public static void printUSBHub()
     {
         Console.WriteLine("USBHub drives:");
-        USBHub[] devices = USBHub.devicesWithDriveLetters;
-        foreach (USBHub usbDevice in devices)
+
+        foreach (USBHub usbDevice in USBHub.DevicesWithDriveLetters())
         {
             Console.WriteLine(usbDevice.ToString());
             Console.WriteLine("Drives: ");

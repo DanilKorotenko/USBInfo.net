@@ -14,10 +14,10 @@ public class USBHelper
     public static USBHub? findUSBHub() 
     {
         USBHub? result = null;
-        USBHub[] devices = USBHub.devicesWithDriveLetters;
-        if (devices.Length > 0) 
+        foreach (USBHub device in USBHub.DevicesWithDriveLetters())
         {
-            result = devices[0];
+            result = device;
+            break;
         }
         return result;
     }

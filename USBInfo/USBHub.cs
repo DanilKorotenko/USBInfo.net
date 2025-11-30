@@ -7,44 +7,29 @@ namespace USBInfo;
 
 public class USBHub : WMObject
 {
-    static public USBHub[] AllDevices
-    {
-        get 
-        {
-            List<USBHub> result = new List<USBHub>();
-            string query = "SELECT * FROM Win32_USBHub";
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
-            foreach (ManagementObject drive in searcher.Get())
-            {
-                result.Add(new USBHub(drive));
-            }
-            return result.ToArray();
-        }
-    }
 
-    static public USBHub[] devicesWithDriveLetters
+    static public IEnumerable<USBHub> DevicesWithDriveLetters()
     {
-        get 
+        using (var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_USBHub"))
         {
-            List<USBHub> result = new List<USBHub>();
-            USBHub[] all = USBHub.AllDevices;
-            foreach (USBHub device in all)
+            foreach (ManagementObject mo in searcher.Get())
             {
-                string[] diskLetters = device.DiskNames;
-                if(diskLetters.Length > 0)
+                using (USBHub device = new USBHub(mo))
                 {
-                    result.Add(device);
+                    string[] diskLetters = device.DiskNames;
+                    if (diskLetters.Length > 0)
+                    {
+                        yield return device;
+                    }
                 }
             }
-            return result.ToArray();
         }
     }
 
     static public USBHub? DeviceWithDriveLetter(string aDriveLetter)
     {
         USBHub? result = null;
-        USBHub[] all = USBHub.devicesWithDriveLetters;
-        foreach (USBHub device in all)
+        foreach (USBHub device in USBHub.DevicesWithDriveLetters())
         {
             string[] diskLetters = device.DiskNames;
             if (diskLetters.Contains(aDriveLetter))
@@ -107,6 +92,7 @@ public class USBHub : WMObject
                         {
                             string childPnpDeviceId = childDeviceId.Replace(@"\", @"\\");
                             string driveQuerry = $"SELECT DeviceID FROM Win32_DiskDrive WHERE PNPDeviceID='{childPnpDeviceId}'";
+                            
                             ManagementObjectSearcher driveSearcher = new ManagementObjectSearcher(driveQuerry);
                             // get the drive object that correspond to this id (escape the id)
                             foreach (ManagementObject drive in driveSearcher.Get())

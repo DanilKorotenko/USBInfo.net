@@ -48,6 +48,4 @@ public class USBVolume : WMObject
             return result;
         }
     }
-
-
 }
