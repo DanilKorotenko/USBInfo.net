@@ -34,6 +34,29 @@ public class WMDrive : WMObject
         }
     }
 
+    static public IEnumerable<WMDrive> AllUSBDrives
+    {
+        get
+        {
+            using (var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive WHERE InterfaceType='USB'"))
+            {
+                foreach (ManagementObject mo in searcher.Get())
+                {
+                    WMDrive drive = new WMDrive(mo);
+                    string[] diskLetters = drive.Letters;
+                    if (diskLetters.Length > 0)
+                    {
+                        yield return drive;
+                    }
+                    else
+                    {
+                        drive.Dispose();
+                    }
+                }
+            }
+        }
+    }
+
     public WMDrive(ManagementObject aDrive) : base(aDrive)
     {
     }
