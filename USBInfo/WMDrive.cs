@@ -57,6 +57,21 @@ public class WMDrive : WMObject
         }
     }
 
+    static public WMDrive? DriveWithLetter(string aLetter)
+    {
+        WMDrive? result = null;
+        foreach (WMDrive drive in AllDrives)
+        {
+            string[] diskLetters = drive.Letters;
+            if (diskLetters.Contains(aLetter))
+            {
+                result = drive;
+                break;
+            }
+        }
+        return result;
+    }
+
     public WMDrive(ManagementObject aDrive) : base(aDrive)
     {
     }
