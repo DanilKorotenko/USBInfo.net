@@ -69,6 +69,14 @@ public class WMDrive : WMObject
         }
     }
 
+    public string? InterfaceType
+    {
+        get 
+        {
+            return GetStringProperty("InterfaceType");
+        }
+    }
+
     private List<string>? letters = null;
 
     public string[] Letters

@@ -6,10 +6,11 @@ class Program
 {
     public static void printWMDrives()
     {
-        foreach (WMDrive drive in WMDrive.AllUSBDrives)
+        foreach (WMDrive drive in WMDrive.AllDrives)
         {
             Console.WriteLine($"Drive Letters: {String.Join(", ", drive.Letters)}");
             Console.WriteLine($"Drive Serial: {drive.SerialNumber}");
+            Console.WriteLine($"Drive InterfaceType: {drive.InterfaceType}");
             Console.WriteLine("******************************************************");
         }
     }
