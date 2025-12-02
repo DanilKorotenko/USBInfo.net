@@ -21,7 +21,8 @@ public class WMDrive : WMObject
                 {
                     WMDrive drive = new WMDrive(mo);
                     string[] diskLetters = drive.Letters;
-                    if (diskLetters.Length > 0)
+                    if ((diskLetters.Length > 0) && 
+                        (String.Compare(diskLetters[0], "C:") > 0))
                     {
                         yield return drive;
                     }
