@@ -11,6 +11,14 @@ namespace USBInfo;
 
 public class WMDrive : WMObject
 {
+    public enum InterfacePriority : uint
+    {
+        USB = 0,
+        SCSI = 1,
+
+        Unknown = unchecked((uint)-1)
+    }
+
     static public IEnumerable<WMDrive> AllDrives
     {
         get
@@ -84,6 +92,27 @@ public class WMDrive : WMObject
             return GetStringProperty("SerialNumber");
         }
     }
+    public string? InterfaceType
+    {
+        get
+        {
+            return GetStringProperty("InterfaceType");
+        }
+    }
+
+    public InterfacePriority Priority
+    {
+        get
+        {
+            string? interfaceType = InterfaceType;
+            if (interfaceType != null)
+            {
+                if (String.Equals(interfaceType, "USB", StringComparison.OrdinalIgnoreCase)) return InterfacePriority.USB;
+                if (String.Equals(interfaceType, "SCSI", StringComparison.OrdinalIgnoreCase)) return InterfacePriority.SCSI;
+            }
+            return InterfacePriority.Unknown;
+        }
+    }
 
     private string? PnpDeviceID
     {
@@ -109,14 +138,6 @@ public class WMDrive : WMObject
                 }
             }
             return result;
-        }
-    }
-
-    public string? InterfaceType
-    {
-        get 
-        {
-            return GetStringProperty("InterfaceType");
         }
     }
 
