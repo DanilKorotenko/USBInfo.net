@@ -85,6 +85,33 @@ public class WMDrive : WMObject
         }
     }
 
+    private string? PnpDeviceID
+    {
+        get
+        {
+            return GetStringProperty("PNPDeviceID");
+        }
+    }
+
+    public string? AlternativeSerialNumber
+    {
+        get
+        {
+            string? result = null;
+
+            string? deviceSerial = this.PnpDeviceID;
+            if (deviceSerial is not null)
+            {
+                string[] components = deviceSerial.Split('\\');
+                if (components.Length > 1)
+                {
+                    result = components[components.Length - 1];
+                }
+            }
+            return result;
+        }
+    }
+
     public string? InterfaceType
     {
         get 

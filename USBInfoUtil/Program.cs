@@ -10,6 +10,7 @@ class Program
         {
             Console.WriteLine($"Drive Letters: {String.Join(", ", drive.Letters)}");
             Console.WriteLine($"Drive Serial: {drive.SerialNumber}");
+            Console.WriteLine($"Drive Alternative Serial: {drive.AlternativeSerialNumber}");
             Console.WriteLine($"Drive InterfaceType: {drive.InterfaceType}");
             Console.WriteLine("******************************************************");
         }
